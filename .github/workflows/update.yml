@@ -1,0 +1,36 @@
+name: 🔄 Atualizar AssessorHub
+
+on:
+  schedule:
+    # Todo dia às 06h00 horário de Brasília (09h00 UTC)
+    - cron: '0 9 * * 1-5'   # Segunda a Sexta
+  workflow_dispatch:          # Permite rodar manualmente pelo GitHub
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write         # Necessário para fazer push do index.html
+
+    steps:
+      - name: 📥 Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: ▶️ Rodar script de atualização
+        env:
+          BRAPI_TOKEN:  ${{ secrets.BRAPI_TOKEN }}
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+        run: python update_hub.py
+
+      - name: 📤 Publicar index.html atualizado
+        run: |
+          git config user.name  "AssessorHub Bot"
+          git config user.email "bot@assessorhub.local"
+          git add index.html
+          git diff --staged --quiet || git commit -m "🔄 Hub atualizado — $(date +'%d/%m/%Y %H:%M') BRT"
+          git push
