@@ -577,10 +577,11 @@ table.pro-table td[contenteditable]:focus{outline:none;background:rgba(240,180,4
     <div class="ia-chat">
       <div class="ia-chat-header">
         <div class="ia-avatar">🤖</div>
-        <div>
+        <div style="flex:1;">
           <div class="ia-chat-title">Assistente IA — AssessorHub</div>
           <div style="font-family:var(--font-mono);font-size:.62rem;color:var(--text3);">Especialista em mercado financeiro brasileiro</div>
         </div>
+        <button class="btn btn-ghost" onclick="resetApiKey()" style="font-size:.6rem;padding:6px 10px;" title="Redefinir chave API">🔑 Redefinir chave</button>
       </div>
       <div class="ia-messages" id="iaMessages"></div>
       <div class="ia-input-area">
@@ -986,17 +987,52 @@ function renderMessages(){
 }
 renderMessages();
 
+// ── Gemini API — 100% Gratuita (aistudio.google.com) ────────────────────────
+let GEMINI_KEY = localStorage.getItem('assessorhub_geminikey') || '';
+
+function checkApiKey(){
+  if(!GEMINI_KEY){
+    const k=prompt('🔑 Cole aqui sua chave GRATUITA do Google AI Studio:\n\n1. Acesse: aistudio.google.com\n2. Clique em "Get API Key"\n3. Cole aqui\n\n✅ 100% gratuito — 1.500 req/dia');
+    if(k && k.length>10){
+      GEMINI_KEY=k.trim();
+      localStorage.setItem('assessorhub_geminikey', GEMINI_KEY);
+      return true;
+    } else {
+      alert('Chave inválida. Tente novamente.');
+      return false;
+    }
+  }
+  return true;
+}
+
+function resetApiKey(){
+  localStorage.removeItem('assessorhub_geminikey');
+  GEMINI_KEY='';
+  alert('Chave removida. Será solicitada na próxima mensagem.');
+}
+
+const SYSTEM_PROMPT=`Você é um assistente especializado em mercado financeiro brasileiro, auxiliando assessores de investimentos profissionais em seu dia a dia.
+
+Contexto atual (março/2026):
+- Ibovespa: 180.463 pts (queda de −2,64% recente)
+- Dólar: R$ 5,30 | Selic: 15,00% a.a. | CDI: 14,51% a.a.
+- Copom: próxima reunião 17-18/mar (corte de 0,50pp esperado pelo mercado)
+- Tensão geopolítica: conflito Irã/Oriente Médio pressiona mercados globais
+- China: meta PIB 2026 de 4,5%-5% (menor desde anos 90)
+
+Responda em português do Brasil. Seja claro, direto e profissional. Use marcadores (•) ao listar. Máximo 3 parágrafos. Foque em insights práticos que o assessor possa usar imediatamente com seus clientes.`;
+
 async function sendIA(){
+  if(!checkApiKey()) return;
+
   const input=document.getElementById('iaInput');
   const text=input.value.trim();
-  if(!text)return;
+  if(!text) return;
   input.value='';
 
-  // Add user message
-  iaHistory.push({role:'user',content:text});
+  iaHistory.push({role:'user', content:text});
   renderMessages();
 
-  // Show typing indicator
   const container=document.getElementById('iaMessages');
   const typingEl=document.createElement('div');
   typingEl.className='ia-msg assistant';
@@ -1004,39 +1040,43 @@ async function sendIA(){
   container.appendChild(typingEl);
   container.scrollTop=container.scrollHeight;
 
+  // Montar histórico no formato Gemini
+  const contents=iaHistory.map(m=>({
+    role: m.role==='assistant'?'model':'user',
+    parts:[{text:m.content}]
+  }));
+
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `Você é um assistente especializado em mercado financeiro brasileiro, auxiliando assessores de investimentos em seu dia a dia.
-
-Contexto atual (06/03/2026):
-- Ibovespa: 180.463 pts (−2,64% ontem)
-- Dólar: R$ 5,30 (+0,73%)
-- Selic: 15,00% ao ano
-- CDI: 14,51% ao ano
-- Copom próxima reunião: 17-18 de março (corte de 0,50pp esperado)
-- Tensão geopolítica: conflito Irã/Oriente Médio pressionando mercados
-- China: meta PIB 2026 de 4,5%-5% (menor desde anos 90)
-
-Responda de forma clara, direta e profissional. Use linguagem acessível mas técnica quando necessário. Formate com marcadores quando listar itens. Seja conciso — máximo 3 parágrafos. Foque em insights práticos para o assessor usar com clientes.`,
-        messages: iaHistory.map(m=>({role:m.role,content:m.content}))
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+    const response=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        system_instruction:{parts:[{text:SYSTEM_PROMPT}]},
+        contents:contents,
+        generationConfig:{maxOutputTokens:1000, temperature:0.7}
       })
     });
 
-    const data = await response.json();
-    const reply = data.content?.[0]?.text || 'Não foi possível obter resposta. Tente novamente.';
+    if(!response.ok){
+      const err=await response.json().catch(()=>({}));
+      if(response.status===400||response.status===403){
+        localStorage.removeItem('assessorhub_geminikey');
+        GEMINI_KEY='';
+        throw new Error('Chave inválida ou expirada. Clique em "Redefinir chave" e tente novamente.');
+      }
+      throw new Error(err?.error?.message||`Erro ${response.status}`);
+    }
 
+    const data=await response.json();
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Não foi possível obter resposta.';
     typingEl.remove();
     iaHistory.push({role:'assistant',content:reply});
     renderMessages();
 
-  } catch(e) {
+  } catch(e){
     typingEl.remove();
-    iaHistory.push({role:'assistant',content:'⚠️ Erro ao conectar com o assistente. Verifique sua conexão e tente novamente.'});
+    iaHistory.push({role:'assistant',content:`⚠️ ${e.message||'Erro de conexão'}.\n\nSe persistir, clique em **"Redefinir chave"** no cabeçalho e insira sua chave do Google AI Studio novamente.`});
     renderMessages();
   }
 }
