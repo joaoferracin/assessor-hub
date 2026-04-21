@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AssessorHub — 20/04/2026</title>
+<title>AssessorHub — 21/04/2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -135,7 +135,7 @@
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:20px;">
-    <span class="date-pill">Mon, 20/04/2026 · 10:46</span>
+    <span class="date-pill">Tue, 21/04/2026 · 10:17</span>
     <span style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;"><span class="pulse"></span>Atualizado hoje</span>
   </div>
 </header>
@@ -153,8 +153,8 @@
   <div class="kpi-row">
     <div class="kpi-card gold">
       <div class="kpi-label">Ibovespa</div>
-      <div class="kpi-value" style="color:var(--gold-light)">195.733,52</div>
-      <div class="kpi-change" style="color:var(--red)">▼ -0.55% ontem</div>
+      <div class="kpi-value" style="color:var(--gold-light)">196.132,06</div>
+      <div class="kpi-change" style="color:var(--green)">▲ +0.20% ontem</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">Dólar (USD/BRL)</div>
@@ -176,7 +176,7 @@
     <div class="card">
       <div class="card-header">
         <span class="card-title">Ibovespa — Últimos 30 dias</span>
-        <span style="font-size:.75rem;color:var(--red);font-family:'DM Mono',monospace">▼ -0.55%</span>
+        <span style="font-size:.75rem;color:var(--green);font-family:'DM Mono',monospace">▲ +0.20%</span>
       </div>
       <div class="card-body">
         <svg id="mainChart" viewBox="0 0 700 160" preserveAspectRatio="none" style="width:100%;height:160px;"></svg>
@@ -292,7 +292,7 @@
 
 <script>
 // Dados injetados pelo Python
-const IBOV_HISTORY = [181932, 182509, 185424, 182733, 181557, 182514, 187462, 187953, 188052, 188162, 188259, 192201, 195129, 197324, 198001, 198657, 197738, 196819, 195734];
+const IBOV_HISTORY = [181932, 182509, 185424, 182733, 181557, 182514, 187462, 187953, 188052, 188162, 188259, 192201, 195129, 197324, 198001, 198657, 197738, 196819, 195734, 196132];
 const NEWS_DATA    = [];
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
