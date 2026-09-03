@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AssessorHub — 02/09/2026</title>
+<title>AssessorHub — 03/09/2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -135,7 +135,7 @@
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:20px;">
-    <span class="date-pill">Wed, 02/09/2026 · 13:13</span>
+    <span class="date-pill">Thu, 03/09/2026 · 13:15</span>
     <span style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;"><span class="pulse"></span>Atualizado hoje</span>
   </div>
 </header>
@@ -153,8 +153,8 @@
   <div class="kpi-row">
     <div class="kpi-card gold">
       <div class="kpi-label">Ibovespa</div>
-      <div class="kpi-value" style="color:var(--gold-light)">179.722,48</div>
-      <div class="kpi-change" style="color:var(--green)">▲ +1.30% ontem</div>
+      <div class="kpi-value" style="color:var(--gold-light)">185.205,10</div>
+      <div class="kpi-change" style="color:var(--green)">▲ +0.00% ontem</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">Dólar (USD/BRL)</div>
@@ -163,12 +163,12 @@
     </div>
     <div class="kpi-card blue">
       <div class="kpi-label">CDI (anual)</div>
-      <div class="kpi-value">13,90%</div>
+      <div class="kpi-value">0,00%</div>
       <div class="kpi-change" style="color:var(--muted)">→ Referência Selic</div>
     </div>
     <div class="kpi-card red">
       <div class="kpi-label">Selic Meta</div>
-      <div class="kpi-value">14,00%</div>
+      <div class="kpi-value">0,00%</div>
       <div class="kpi-change" style="color:var(--muted)">Banco Central do Brasil</div>
     </div>
   </div>
@@ -176,7 +176,7 @@
     <div class="card">
       <div class="card-header">
         <span class="card-title">Ibovespa — Últimos 30 dias</span>
-        <span style="font-size:.75rem;color:var(--green);font-family:'DM Mono',monospace">▲ +1.30%</span>
+        <span style="font-size:.75rem;color:var(--green);font-family:'DM Mono',monospace">▲ +0.00%</span>
       </div>
       <div class="card-body">
         <svg id="mainChart" viewBox="0 0 700 160" preserveAspectRatio="none" style="width:100%;height:160px;"></svg>
@@ -292,7 +292,7 @@
 
 <script>
 // Dados injetados pelo Python
-const IBOV_HISTORY = [178000, 177895, 177726, 175546, 172513, 172180, 167875, 167491, 167101, 166934, 166784, 166335, 167830, 167927, 171032, 171907, 174577, 174586, 175135, 177419, 179723];
+const IBOV_HISTORY = [177895, 177726, 175546, 172513, 172180, 167875, 167491, 167101, 166934, 166784, 166335, 167830, 167927, 171032, 171907, 174577, 174586, 175135, 177419, 179723, 185205];
 const NEWS_DATA    = [];
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
